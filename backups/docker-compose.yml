@@ -1,0 +1,91 @@
+version: '3.9'
+services:
+  web:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./data-web-server:/usr/share/nginx/html
+    environment:
+      SFTP_HOST: sftp
+      VIRTUAL_PORT: 80
+      VIRTUAL_HOST: 193.168.145.12
+      LETSENCRYPT_HOST: 193.168.145.12
+      LETSENCRYPT_EMAIL: hasler.tehou@octhama.works
+    networks:
+      - infra-network
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - 81:80
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: octhama
+      WORDPRESS_DB_PASSWORD: azerty
+      WORDPRESS_DB_NAME: mydata_db
+    volumes:
+      - data-wordpress:/var/www/html
+    depends_on:
+      - mariadb
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: azerty
+      MYSQL_DATABASE: mydata_db
+      MYSQL_USER: octhama
+      MYSQL_PASSWORD: azerty
+    ports:
+      - 3306:3306
+  sftp:
+    image: atmoz/sftp:latest
+    volumes:
+      - ./data-web-server:/home/octhama/upload
+    ports:
+      - 2222:22
+    command: octhama:azerty:1001
+    networks:
+      - infra-network
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 443:443
+    volumes:
+      - /sys_infra/certs:/etc/nginx/certs
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      DEFAULT_HOSTS: 193.168.145.12
+    networks:
+      - infra-network
+    depends_on:
+      - web
+  duplicati:
+    image: duplicati/duplicati
+    restart: always
+    environment:
+      SMTP_TO: kuassi.tehou@gmail.com
+      SMTP_SUBJECT: "Duplicati Backup Report"
+      SMTP_BODY: "A backup report is attached"
+      SMTP_ATTACHMENT_FILENAME: backup.zip
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+    volumes:
+      - ./duplicati-data:/root/.config/Duplicati
+      - ./backups:/backups
+    ports:
+      - 8200:8200
+    depends_on:
+      - web
+      - wordpress
+    networks:
+      - infra-network
+
+volumes:
+  data-wordpress:
+  data-web-server:
+
+networks:
+  infra-network:
+    driver: bridge

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MySysWebServer</title>
+</head>
+<style>
+  /* Existing styles here */
+
+  #connectionMessages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  body {
+    background-color: black;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  h1 {
+    color: #5e9ca0;
+    text-align: center;
+  }
+  p {
+    font-family: verdana,serif;
+    font-size: 20px;
+    text-align: center;
+    color: #000;
+  }
+  a {
+    color: #0000ff;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #0000ff;
+    text-decoration: underline;
+  }
+  button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+<body>
+<main>
+<h1>Hello Admin - Welcome dans ton WebServer 😁</h1>
+<div id="connectionMessages"></div>
+<script>
+  function detectConnection() {
+    printConnectionMessage("Connexion établie ! 🚀 Vous pouvez maintenant via votre logiciel SFTP (FileZilla, WinSCP,etc...) vous connecter 👨‍💻au serveur NGINX ✅");
+  }
+
+  function printConnectionMessage(message) {
+    const connectionMessagesDiv = document.getElementById("connectionMessages");
+    const messageParagraph = document.createElement("p");
+    messageParagraph.innerText = message;
+    messageParagraph.style.color = "green";
+    messageParagraph.style.fontWeight = "bold";
+    messageParagraph.style.fontSize = "20px";
+    messageParagraph.style.textAlign = "center";
+    connectionMessagesDiv.appendChild(messageParagraph);
+  }
+  detectConnection();
+</script>
+<button onclick="window.location.href='http://193.168.145.12:81/'">Accédez à votre blog WordPress 🔑</button><br>
+<button onclick="window.location.href='http://193.168.145.12:8200/'">Accédez à votre control panel Duplicati 🔑</button><br>
+<button onclick="window.location.href='http://193.168.145.12:8080/'">Accédez à votre control panel phpMyAdmin 🔑</button><br>
+</main>
+</body>
+</html>
